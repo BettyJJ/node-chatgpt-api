@@ -49,28 +49,28 @@ let conversationData = {};
 
 const availableCommands = [
     {
-        name: '!editor - Open the editor (for multi-line messages)',
-        value: '!editor',
+        name: '/new - Start new conversation',
+        value: '/new',
     },
     {
-        name: '!resume - Resume last conversation',
-        value: '!resume',
+        name: '/editor - Open the editor (for multi-line messages)',
+        value: '/editor',
     },
     {
-        name: '!new - Start new conversation',
-        value: '!new',
+        name: '/resume - Resume last conversation',
+        value: '/resume',
     },
     {
-        name: '!copy - Copy conversation to clipboard',
-        value: '!copy',
+        name: '/copy - Copy conversation to clipboard',
+        value: '/copy',
     },
     {
-        name: '!delete-all - Delete all conversations',
-        value: '!delete-all',
+        name: '/delete-all - Delete all conversations',
+        value: '/delete-all',
     },
     {
-        name: '!exit - Exit ChatGPT CLI',
-        value: '!exit',
+        name: '/exit - Exit ChatGPT CLI',
+        value: '/exit',
     },
 ];
 
@@ -100,7 +100,7 @@ console.log(tryBoxen('ChatGPT CLI', { padding: 0.7, margin: 1, borderStyle: 'dou
 await conversation();
 
 async function conversation() {
-    console.log('Type "!" to access the command menu.');
+    console.log('Type "/" to access the command menu.');
     const prompt = inquirer.prompt([
         {
             type: 'autocomplete',
@@ -121,7 +121,7 @@ async function conversation() {
         if (!input) {
             return [];
         }
-        prompt.ui.activePrompt.opt.suggestOnly = !input.startsWith('!');
+        prompt.ui.activePrompt.opt.suggestOnly = !input.startsWith('/');
         return availableCommands.filter((command) => command.value.startsWith(input));
     };
     let { message } = await prompt;
@@ -129,19 +129,19 @@ async function conversation() {
     if (!message) {
         return conversation();
     }
-    if (message.startsWith('!')) {
+    if (message.startsWith('/')) {
         switch (message) {
-            case '!editor':
+            case '/editor':
                 return useEditor();
-            case '!resume':
+            case '/resume':
                 return resumeConversation();
-            case '!new':
+            case '/new':
                 return newConversation();
-            case '!copy':
+            case '/copy':
                 return copyConversation();
-            case '!delete-all':
+            case '/delete-all':
                 return deleteAllConversations();
-            case '!exit':
+            case '/exit':
                 return true;
         }
     }
@@ -181,7 +181,7 @@ async function onMessage(message) {
                 responseText = response.response;
                 break;
         }
-        clipboard.write(responseText).then(() => {}).catch(() => {});
+        // clipboard.write(responseText).then(() => {}).catch(() => {});
         spinner.stop();
         switch (clientToUse) {
             case 'bing':
