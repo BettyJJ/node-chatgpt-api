@@ -200,7 +200,9 @@ async function onMessage(message) {
                 break;
         }
         await client.conversationsCache.set('lastConversation', conversationData);
-        const output = tryBoxen(responseText, { title: aiLabel, padding: 0.7, margin: 1, dimBorder: true });
+        // const output = tryBoxen(responseText, { title: aiLabel, padding: 0.7, margin: 1, dimBorder: true });
+        const output = '─────────────────────────────────\nChatGPT:\n' + 
+                        responseText + '\n─────────────────────────────────'
         console.log(output);
     } catch (error) {
         spinner.stop();
