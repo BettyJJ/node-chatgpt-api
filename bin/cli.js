@@ -169,7 +169,7 @@ async function onMessage(message) {
             onProgress: (token) => {
                 reply += token;
                 const output = tryBoxen(`${reply}█`, { title: aiLabel, padding: 0.7, margin: 1, dimBorder: true });
-                spinner.text = `${spinnerPrefix}\n${output}`;
+                // spinner.text = `${spinnerPrefix}\n${output}`;
             },
         });
         let responseText;
