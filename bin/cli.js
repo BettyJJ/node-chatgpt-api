@@ -42,7 +42,17 @@ if (settings.storageFilePath && !settings.cacheOptions.store) {
         fs.writeFileSync(settings.storageFilePath, '');
     }
 
-    settings.cacheOptions.store = new KeyvFile({ filename: settings.storageFilePath });
+    // settings.cacheOptions.store = new KeyvFile({ filename: settings.storageFilePath });
+    
+    // make the format more readable
+    const encode = function(v){
+        v = JSON.stringify(v, null, '\t');
+        return v;
+    };
+    settings.cacheOptions.store = new KeyvFile({ 
+        filename: settings.storageFilePath,
+        encode: encode
+    });
 }
 
 let conversationData = {};
