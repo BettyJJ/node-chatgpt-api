@@ -48,6 +48,7 @@ export default class ChatGPTBrowserClient {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${this.accessToken}`,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
                 Cookie: this.cookies || undefined,
             },
 
@@ -56,11 +57,11 @@ export default class ChatGPTBrowserClient {
                 action,
                 messages: message ? [
                     {
-                        id: crypto.randomUUID(),
+                        id: message.id,
                         role: 'user',
                         content: {
                             content_type: 'text',
-                            parts: [message],
+                            parts: [message.message],
                         },
                     },
                 ] : undefined,
@@ -207,7 +208,7 @@ export default class ChatGPTBrowserClient {
             {
                 conversationId,
                 parentMessageId,
-                message,
+                message: userMessage,
             },
             opts.onProgress || (() => {}),
             opts.abortController || new AbortController(),
@@ -235,6 +236,7 @@ export default class ChatGPTBrowserClient {
         return {
             response: replyMessage.message,
             conversationId,
+            parentMessageId: replyMessage.parentMessageId,
             messageId: replyMessage.id,
             details: result,
         };
@@ -259,6 +261,7 @@ export default class ChatGPTBrowserClient {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${this.accessToken}`,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
                 Cookie: this.cookies || undefined,
             },
             body: JSON.stringify({

@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-unused-vars
+import { KeyvFile } from 'keyv-file';
 import { BingAIClient } from '../index.js';
 
 const options = {

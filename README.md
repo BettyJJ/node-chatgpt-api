@@ -224,9 +224,9 @@ module.exports = {
         debug: false,
     },
     chatGptBrowserClient: {
-        // (Optional) Support for a reverse proxy for the completions endpoint (private API server).
+        // (Optional) Support for a reverse proxy for the conversation endpoint (private API server).
         // Warning: This will expose your access token to a third party. Consider the risks before using this.
-        reverseProxyUrl: 'https://chatgpt.duti.tech/api/conversation',
+        reverseProxyUrl: 'https://bypass.duti.tech/api/conversation',
         // Access token from https://chat.openai.com/api/auth/session
         accessToken: '',
         // Cookies from chat.openai.com (likely not required if using reverse proxy server).
@@ -483,14 +483,14 @@ Instructions are provided below.
 
 ## Projects
 🚀 A list of awesome projects using `@waylaidwanderer/chatgpt-api`:
-- [ChatGPT Web Client](https://github.com/waylaidwanderer/chatgpt-web-client): this is my web client using this project's API server, built using Nuxt 3. Also usable with other compatible API server implementations.
+- [PandoraAI](https://github.com/waylaidwanderer/PandoraAI): my web chat client powered by node-chatgpt-api, allowing users to easily chat with multiple AI systems while also offering support for custom presets. With its seamless and convenient design, PandoraAI provides an engaging conversational AI experience.
 - [ChatGPT Clone](https://github.com/danny-avila/chatgpt-clone): a clone of ChatGPT, uses official model, reverse-engineered UI, with AI model switching, message search, and prompt templates.
+- [ChatGPT WebApp](https://github.com/frontend-engineering/chatgpt-webapp-fullstack): a fullstack chat webapp with mobile compatble UI interface, and node-chatgpt-api works as backend. Anyone can deploy your own chat service.
 
 Add yours to the list by [editing this README](https://github.com/waylaidwanderer/node-chatgpt-api/edit/main/README.md) and creating a pull request!
 
 ## Web Client
-A web client is available for this project's API server is also available at [waylaidwanderer/chatgpt-web-client](https://github.com/waylaidwanderer/chatgpt-web-client).
-Or use one of the many projects listed above!
+A web client for this project is also available at [waylaidwanderer/PandoraAI](https://github.com/waylaidwanderer/PandoraAI).
 
 ## Caveats
 ### Regarding `ChatGPTClient`
