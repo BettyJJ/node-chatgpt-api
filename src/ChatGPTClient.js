@@ -142,9 +142,7 @@ export default class ChatGPTClient {
             abortController = new AbortController();
         }
         const modelOptions = { ...this.modelOptions };
-        if (typeof onProgress === 'function') {
-            modelOptions.stream = true;
-        }
+        modelOptions.stream = typeof onProgress === 'function';
         if (this.isChatGptModel) {
             modelOptions.messages = input;
         } else {
@@ -162,7 +160,6 @@ export default class ChatGPTClient {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${this.apiKey}`,
             },
             body: JSON.stringify(modelOptions),
             dispatcher: new Agent({
@@ -170,6 +167,9 @@ export default class ChatGPTClient {
                 headersTimeout: 0,
             }),
         };
+        if (this.apiKey) {
+            opts.headers.Authorization = `Bearer ${this.apiKey}`;
+        }
 
         if (this.options.proxy) {
             opts.dispatcher = new ProxyAgent(this.options.proxy);
@@ -262,6 +262,35 @@ export default class ChatGPTClient {
         return response.json();
     }
 
+    async generateTitle(userMessage, botMessage) {
+        const instructionsPayload = {
+            role: 'system',
+            content: `Write an extremely concise subtitle for this conversation with no more than a few words. All words should be capitalized. Exclude punctuation.
+
+||>Message:
+${userMessage.message}
+||>Response:
+${botMessage.message}
+
+||>Title:`,
+        };
+
+        const titleGenClientOptions = JSON.parse(JSON.stringify(this.options));
+        titleGenClientOptions.modelOptions = {
+            model: 'gpt-3.5-turbo',
+            temperature: 0,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+        };
+        const titleGenClient = new ChatGPTClient(this.apiKey, titleGenClientOptions);
+        const result = await titleGenClient.getCompletion([instructionsPayload], null);
+        // remove any non-alphanumeric characters, replace multiple spaces with 1, and then trim
+        return result.choices[0].message.content
+            .replace(/[^a-zA-Z0-9' ]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
     async sendMessage(
         message,
         opts = {},
@@ -274,12 +303,16 @@ export default class ChatGPTClient {
         const parentMessageId = opts.parentMessageId || crypto.randomUUID();
 
         let conversation = await this.conversationsCache.get(conversationId);
+        let isNewConversation = false;
         if (!conversation) {
             conversation = {
                 messages: [],
                 createdAt: Date.now(),
             };
+            isNewConversation = true;
         }
+
+        const shouldGenerateTitle = opts.shouldGenerateTitle && isNewConversation;
 
         const userMessage = {
             id: crypto.randomUUID(),
@@ -354,15 +387,22 @@ export default class ChatGPTClient {
         };
         conversation.messages.push(replyMessage);
 
-        await this.conversationsCache.set(conversationId, conversation);
-
-        return {
+        const returnData = {
             response: replyMessage.message,
             conversationId,
             parentMessageId: replyMessage.parentMessageId,
             messageId: replyMessage.id,
             details: result || {},
         };
+
+        if (shouldGenerateTitle) {
+            conversation.title = await this.generateTitle(userMessage, replyMessage);
+            returnData.title = conversation.title;
+        }
+
+        await this.conversationsCache.set(conversationId, conversation);
+
+        return returnData;
     }
 
     async buildPrompt(messages, parentMessageId, isChatGptModel = false) {
